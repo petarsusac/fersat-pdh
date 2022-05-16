@@ -27,6 +27,8 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+
+#include "stm32l4xx_ll_dma.h"
 #include "stm32l4xx_ll_crs.h"
 #include "stm32l4xx_ll_rcc.h"
 #include "stm32l4xx_ll_bus.h"
@@ -35,7 +37,6 @@ extern "C" {
 #include "stm32l4xx_ll_cortex.h"
 #include "stm32l4xx_ll_utils.h"
 #include "stm32l4xx_ll_pwr.h"
-#include "stm32l4xx_ll_dma.h"
 #include "stm32l4xx_ll_spi.h"
 #include "stm32l4xx_ll_tim.h"
 #include "stm32l4xx_ll_gpio.h"
@@ -85,6 +86,24 @@ void Error_Handler(void);
                                                                  0 bit  for subpriority */
 #endif
 /* USER CODE BEGIN Private defines */
+#define SB_SPIx 			SPI3
+
+#define ADC_CS_GPIOx	GPIOA
+#define ADC_CS_PIN		LL_GPIO_PIN_1
+#define ADC_RST_GPIOx	GPIOA
+#define ADC_RST_PIN		LL_GPIO_PIN_2
+#define ADC_CLK_GPIOx	GPIOC
+#define ADC_CLK_PIN		LL_GPIO_PIN_9
+
+#define TEMP1_CS_GPIOx	GPIOA
+#define TEMP1_CS_PIN	LL_GPIO_PIN_3
+#define TEMP2_CS_GPIOx	GPIOA
+#define TEMP2_CS_PIN	LL_GPIO_PIN_10
+#define TEMP3_CS_GPIOx	GPIOA
+#define TEMP3_CS_PIN	LL_GPIO_PIN_11
+
+#define BYTES_PER_SAMPLE 30
+#define NUM_SAMPLES		5
 
 /* USER CODE END Private defines */
 

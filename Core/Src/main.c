@@ -18,6 +18,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
+#include "spi.h"
+#include "tim.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -41,17 +45,19 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t current_sample_count;
+volatile uint8_t rx_buffer[NUM_SAMPLES][BYTES_PER_SAMPLE];
+volatile uint8_t start;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_TIM2_Init(void);
-static void MX_SPI3_Init(void);
 /* USER CODE BEGIN PFP */
-void collect_sample_LL(uint8_t *rx_buffer);
+void ADC_first_read();
 void wait_for_10_ms();
+void ADC_SPI_DMA_init();
+void ADC_DRDY_interrupt_handler();
+void DMA_Transfer_Complete_interrupt_handler();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -95,45 +101,13 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM2_Init();
+  MX_DMA_Init();
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
-  	uint8_t rx_buffer[30];
-
-	LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_1); // \CS low
-	LL_SPI_Enable(SPI3);
-
-	LL_SPI_TransmitData8(SPI3, 0x00);
-
-	for (int i = 0; i <= 28; i++) {
-	  while ( !LL_SPI_IsActiveFlag_TXE(SPI3) ); // wait until TXE is set
-	  LL_SPI_TransmitData8(SPI3, 0x00);
-	  while ( !LL_SPI_IsActiveFlag_RXNE(SPI3) ); // wait until RXNE is set
-	  rx_buffer[i] = LL_SPI_ReceiveData8(SPI3); // read DR (clears RXNE)
-	}
-
-	while ( !LL_SPI_IsActiveFlag_RXNE(SPI3) ); // wait until RXNE is set
-	rx_buffer[29] = LL_SPI_ReceiveData8(SPI3); // read DR (clears RXNE)
-
-	LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1); // \CS high
-
-	for(int i = 0; i < 100; i++);
-
-	LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_1); // \CS low
-	LL_SPI_Enable(SPI3);
-
-	LL_SPI_TransmitData8(SPI3, 0x00);
-
-	for (int i = 0; i <= 28; i++) {
-	  while ( !LL_SPI_IsActiveFlag_TXE(SPI3) ); // wait until TXE is set
-	  LL_SPI_TransmitData8(SPI3, 0x00);
-	  while ( !LL_SPI_IsActiveFlag_RXNE(SPI3) ); // wait until RXNE is set
-	  rx_buffer[i] = LL_SPI_ReceiveData8(SPI3); // read DR (clears RXNE)
-	}
-
-	while ( !LL_SPI_IsActiveFlag_RXNE(SPI3) ); // wait until RXNE is set
-	rx_buffer[29] = LL_SPI_ReceiveData8(SPI3); // read DR (clears RXNE)
-
-	LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1); // \CS high
+  NVIC_DisableIRQ(EXTI4_IRQn); // disable DRDY interrupts until setup is completed
+  ADC_first_read();
+  ADC_SPI_DMA_init();
+  NVIC_EnableIRQ(EXTI4_IRQn);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -143,23 +117,25 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	while(LL_GPIO_ReadInputPort(GPIOC) & LL_GPIO_PIN_4); // wait for /DRDY to go low
+	  if (current_sample_count < NUM_SAMPLES) {
+		  if (start == 1) {
+			NVIC_DisableIRQ(EXTI4_IRQn);
+			start = 0;
 
-	LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_1); // \CS low
+			LL_GPIO_ResetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN);
+			LL_SPI_Enable(SB_SPIx);
 
-	LL_SPI_TransmitData8(SPI3, 0x00);
+			// send 30 dummy bytes to drive SPI clock, meanwhile DMA handles RX transfer
+			for (int i = 0; i < 30; i++) {
+				while ( !LL_SPI_IsActiveFlag_TXE(SB_SPIx) ); // wait for TXE
+				LL_SPI_TransmitData8(SB_SPIx, 0x00); // transmit dummy byte
+			}
 
-	for (int i = 0; i <= 28; i++) {
-	  while ( !LL_SPI_IsActiveFlag_TXE(SPI3) ); // wait until TXE is set
-	  LL_SPI_TransmitData8(SPI3, 0x00);
-	  while ( !LL_SPI_IsActiveFlag_RXNE(SPI3) ); // wait until RXNE is set
-	  rx_buffer[i] = LL_SPI_ReceiveData8(SPI3); // read DR (clears RXNE)
-	}
+			current_sample_count++;
 
-	while ( !LL_SPI_IsActiveFlag_RXNE(SPI3) ); // wait until RXNE is set
-	rx_buffer[29] = LL_SPI_ReceiveData8(SPI3); // read DR (clears RXNE)
-
-	LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1); // \CS high
+			// communication end is handled in DMA Transfer Complete ISR
+		  }
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -199,141 +175,49 @@ void SystemClock_Config(void)
   LL_SetSystemCoreClock(16000000);
 }
 
-/**
-  * @brief SPI3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI3_Init(void)
-{
-
-  /* USER CODE BEGIN SPI3_Init 0 */
-
-  /* USER CODE END SPI3_Init 0 */
-
-  LL_SPI_InitTypeDef SPI_InitStruct = {0};
-
-  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_SPI3);
-
-  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOC);
-  /**SPI3 GPIO Configuration
-  PC10   ------> SPI3_SCK
-  PC11   ------> SPI3_MISO
-  PC12   ------> SPI3_MOSI
-  */
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_10|LL_GPIO_PIN_11|LL_GPIO_PIN_12;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_6;
-  LL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /* USER CODE BEGIN SPI3_Init 1 */
-
-  /* USER CODE END SPI3_Init 1 */
-  /* SPI3 parameter configuration*/
-  SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
-  SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
-  SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
-  SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_HIGH;
-  SPI_InitStruct.ClockPhase = LL_SPI_PHASE_2EDGE;
-  SPI_InitStruct.NSS = LL_SPI_NSS_SOFT;
-  SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV32;
-  SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
-  SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
-  SPI_InitStruct.CRCPoly = 7;
-  LL_SPI_Init(SPI3, &SPI_InitStruct);
-  LL_SPI_SetStandard(SPI3, LL_SPI_PROTOCOL_MOTOROLA);
-  LL_SPI_DisableNSSPulseMgt(SPI3);
-  /* USER CODE BEGIN SPI3_Init 2 */
-
-  /* USER CODE END SPI3_Init 2 */
-
-}
-
-/**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM2_Init(void)
-{
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
-
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
-  TIM_InitStruct.Prescaler = 0;
-  TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 16;
-  TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
-  LL_TIM_Init(TIM2, &TIM_InitStruct);
-  LL_TIM_DisableARRPreload(TIM2);
-  LL_TIM_SetClockSource(TIM2, LL_TIM_CLOCKSOURCE_INTERNAL);
-  LL_TIM_SetTriggerOutput(TIM2, LL_TIM_TRGO_RESET);
-  LL_TIM_DisableMasterSlaveMode(TIM2);
-  /* USER CODE BEGIN TIM2_Init 2 */
-
-  /* USER CODE END TIM2_Init 2 */
-
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* GPIO Ports Clock Enable */
-  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
-  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOC);
-
-  /**/
-  LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1|LL_GPIO_PIN_2|LL_GPIO_PIN_3);
-
-  /**/
-  LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_9);
-
-  /**/
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_1|LL_GPIO_PIN_2|LL_GPIO_PIN_3;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /**/
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_4;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /**/
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_9;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-}
-
 /* USER CODE BEGIN 4 */
+void ADC_first_read() {
+	uint8_t rx_buffer[30];
+
+	LL_GPIO_ResetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN); // \CS low
+	LL_SPI_Enable(SB_SPIx);
+
+	LL_SPI_TransmitData8(SB_SPIx, 0x00);
+
+	for (int i = 0; i <= 28; i++) {
+	  while ( !LL_SPI_IsActiveFlag_TXE(SB_SPIx) ); // wait until TXE is set
+	  LL_SPI_TransmitData8(SB_SPIx, 0x00);
+	  while ( !LL_SPI_IsActiveFlag_RXNE(SB_SPIx) ); // wait until RXNE is set
+	  rx_buffer[i] = LL_SPI_ReceiveData8(SB_SPIx); // read DR (clears RXNE)
+	}
+
+	while ( !LL_SPI_IsActiveFlag_RXNE(SB_SPIx) ); // wait until RXNE is set
+	rx_buffer[29] = LL_SPI_ReceiveData8(SB_SPIx); // read DR (clears RXNE)
+
+	LL_GPIO_SetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN); // \CS high
+
+	for(int i = 0; i < 100; i++); // TODO: write a delay function to replace this
+
+	LL_GPIO_ResetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN); // \CS low
+
+	LL_SPI_TransmitData8(SB_SPIx, 0x00);
+
+	for (int i = 0; i <= 28; i++) {
+	  while ( !LL_SPI_IsActiveFlag_TXE(SB_SPIx) ); // wait until TXE is set
+	  LL_SPI_TransmitData8(SB_SPIx, 0x00);
+	  while ( !LL_SPI_IsActiveFlag_RXNE(SB_SPIx) ); // wait until RXNE is set
+	  rx_buffer[i] = LL_SPI_ReceiveData8(SB_SPIx); // read DR (clears RXNE)
+	}
+
+	while ( !LL_SPI_IsActiveFlag_RXNE(SB_SPIx) ); // wait until RXNE is set
+	rx_buffer[29] = LL_SPI_ReceiveData8(SB_SPIx); // read DR (clears RXNE)
+
+	LL_GPIO_SetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN); // \CS high
+
+	while (LL_SPI_GetTxFIFOLevel(SB_SPIx) != LL_SPI_TX_FIFO_EMPTY); // wait for TX FIFO to become empty
+	while (LL_SPI_IsActiveFlag_BSY(SB_SPIx)); // wait for BSY flag to go low
+	LL_SPI_Disable(SB_SPIx);
+}
 
 void wait_for_10_ms() {
 	// 16 MHz APB1 clock before timer prescaler
@@ -345,6 +229,40 @@ void wait_for_10_ms() {
 	while ( !LL_TIM_IsActiveFlag_UPDATE(TIM2) ); // wait for update flag
 	LL_TIM_ClearFlag_UPDATE(TIM2); // clear update flag
 }
+
+void ADC_SPI_DMA_init() {
+	LL_DMA_SetPeriphAddress(DMA2, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(SB_SPIx));
+	LL_DMA_EnableIT_TC(DMA2, LL_DMA_CHANNEL_1);
+}
+
+void ADC_DRDY_interrupt_handler() {
+	LL_DMA_SetDataLength(DMA2, LL_DMA_CHANNEL_1, 30);
+	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_CHANNEL_1, (uint32_t) rx_buffer[current_sample_count]);
+
+	LL_SPI_EnableDMAReq_RX(SB_SPIx);
+	LL_DMA_EnableChannel(DMA2, LL_DMA_CHANNEL_1);
+	LL_SPI_EnableIT_RXNE(SB_SPIx);
+
+	start = 1;
+}
+
+void DMA_Transfer_Complete_interrupt_handler() {
+	LL_DMA_ClearFlag_TC1(DMA2);
+
+	LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_1);
+
+	// SPI Disable procedure
+	while (LL_SPI_GetTxFIFOLevel(SB_SPIx) != LL_SPI_TX_FIFO_EMPTY); // wait for TX FIFO to become empty
+	while (LL_SPI_IsActiveFlag_BSY(SB_SPIx)); // wait for BSY flag to go low
+	LL_SPI_Disable(SB_SPIx);
+
+	LL_SPI_DisableDMAReq_RX(SB_SPIx);
+
+	LL_GPIO_SetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN);
+
+	NVIC_EnableIRQ(EXTI4_IRQn);
+}
+
 /* USER CODE END 4 */
 
 /**

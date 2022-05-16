@@ -60,8 +60,8 @@ all: main-build
 main-build: fersat_pdh.elf secondary-outputs
 
 # Tool invocations
-fersat_pdh.elf fersat_pdh.map: $(OBJS) $(USER_OBJS) D:\ST\STM32CubeIDE\workspace_1.5.1\fersat_pdh\STM32L471VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "fersat_pdh.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\ST\STM32CubeIDE\workspace_1.5.1\fersat_pdh\STM32L471VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fersat_pdh.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+fersat_pdh.elf fersat_pdh.map: $(OBJS) $(USER_OBJS) /home/petar/fersat-pdh/STM32L471VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "fersat_pdh.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/petar/fersat-pdh/STM32L471VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="fersat_pdh.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
