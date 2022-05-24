@@ -31,7 +31,7 @@ extern "C" {
 /* DMA memory to memory transfer handles -------------------------------------*/
 
 /* USER CODE BEGIN Includes */
-
+#include "spi.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -41,7 +41,10 @@ extern "C" {
 void MX_DMA_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void ADC_SPI_DMA_init();
+void DMA_Transfer_Complete_RX_interrupt_handler();
+void DMA_Transfer_Complete_TX_interrupt_handler();
+void DMA_Disable(SPI_TypeDef *SPIx);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -88,13 +88,6 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 #define SB_SPIx 			SPI3
 
-#define ADC_CS_GPIOx	GPIOA
-#define ADC_CS_PIN		LL_GPIO_PIN_1
-#define ADC_RST_GPIOx	GPIOA
-#define ADC_RST_PIN		LL_GPIO_PIN_2
-#define ADC_CLK_GPIOx	GPIOC
-#define ADC_CLK_PIN		LL_GPIO_PIN_9
-
 #define TEMP1_CS_GPIOx	GPIOA
 #define TEMP1_CS_PIN	LL_GPIO_PIN_3
 #define TEMP2_CS_GPIOx	GPIOA
@@ -102,8 +95,17 @@ void Error_Handler(void);
 #define TEMP3_CS_GPIOx	GPIOA
 #define TEMP3_CS_PIN	LL_GPIO_PIN_11
 
+#define ADC_CS_GPIOx	GPIOA
+#define ADC_CS_PIN		LL_GPIO_PIN_1
+#define ADC_RST_GPIOx	GPIOA
+#define ADC_RST_PIN		LL_GPIO_PIN_2
+#define ADC_CLK_GPIOx	GPIOC
+#define ADC_CLK_PIN		LL_GPIO_PIN_9
+
 #define BYTES_PER_SAMPLE 30
 #define NUM_SAMPLES		5
+
+extern uint8_t dummy_bytes[NUM_SAMPLES];
 
 /* USER CODE END Private defines */
 

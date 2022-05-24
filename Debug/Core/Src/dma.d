@@ -18,7 +18,8 @@ Core/Src/dma.o: ../Core/Src/dma.c ../Core/Inc/dma.h ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_pwr.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_tim.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h \
+ ../Core/Inc/spi.h
 ../Core/Inc/dma.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_dma.h:
@@ -41,3 +42,4 @@ Core/Src/dma.o: ../Core/Src/dma.c ../Core/Inc/dma.h ../Core/Inc/main.h \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_tim.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:
+../Core/Inc/spi.h:

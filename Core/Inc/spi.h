@@ -39,7 +39,8 @@ extern "C" {
 void MX_SPI3_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void SPI_TransmitReceive(SPI_TypeDef *SPIx, uint8_t len, uint8_t *tx_buffer, uint8_t *rx_buffer);
+void SPI_Disable(SPI_TypeDef *SPIx);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -47,7 +47,8 @@
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 void ADC_DRDY_interrupt_handler();
-void DMA_Transfer_Complete_interrupt_handler();
+void DMA_Transfer_Complete_RX_interrupt_handler();
+void DMA_Transfer_Complete_TX_interrupt_handler();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -225,7 +226,7 @@ void EXTI4_IRQHandler(void)
 void DMA2_Channel1_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA2_Channel1_IRQn 0 */
-	DMA_Transfer_Complete_interrupt_handler();
+	DMA_Transfer_Complete_RX_interrupt_handler();
   /* USER CODE END DMA2_Channel1_IRQn 0 */
 
   /* USER CODE BEGIN DMA2_Channel1_IRQn 1 */
@@ -233,12 +234,30 @@ void DMA2_Channel1_IRQHandler(void)
   /* USER CODE END DMA2_Channel1_IRQn 1 */
 }
 
+/**
+  * @brief This function handles DMA2 channel2 global interrupt.
+  */
+void DMA2_Channel2_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Channel2_IRQn 0 */
+	DMA_Transfer_Complete_TX_interrupt_handler();
+  /* USER CODE END DMA2_Channel2_IRQn 0 */
+
+  /* USER CODE BEGIN DMA2_Channel2_IRQn 1 */
+
+  /* USER CODE END DMA2_Channel2_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 __WEAK void ADC_DRDY_interrupt_handler() {
 	__NOP();
 }
 
-__WEAK void DMA_Transfer_Complete_interrupt_handler() {
+__WEAK void DMA_Transfer_Complete_RX_interrupt_handler() {
+	__NOP();
+}
+
+__WEAK void DMA_Transfer_Complete_TX_interrupt_handler() {
 	__NOP();
 }
 /* USER CODE END 1 */

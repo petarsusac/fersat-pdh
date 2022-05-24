@@ -1,0 +1,15 @@
+../Drivers/CMSIS/Include/core_cm4.h:1717:22:__NVIC_DisableIRQ	16	static,ignoring_inline_asm
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_dma.h:552:22:LL_DMA_EnableChannel	24	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_dma.h:996:22:LL_DMA_SetDataLength	32	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_dma.h:1084:22:LL_DMA_SetMemoryAddress	32	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:358:22:LL_SPI_Enable	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:1097:22:LL_SPI_EnableIT_RXNE	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:1108:22:LL_SPI_EnableIT_TXE	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:1194:22:LL_SPI_EnableDMAReq_RX	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:1227:22:LL_SPI_EnableDMAReq_TX	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:956:22:LL_GPIO_SetOutputPin	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:985:22:LL_GPIO_ResetOutputPin	16	static
+../Core/Src/adc.c:7:6:ADC_first_read	56	static
+../Core/Src/adc.c:23:6:ADC_DRDY_interrupt_handler	8	static
+../Core/Src/adc.c:46:6:ADC_set_RX_buffer	16	static
+../Core/Src/adc.c:50:6:ADC_set_num_samples	16	static

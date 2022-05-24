@@ -72,6 +72,23 @@ void MX_SPI3_Init(void)
 
   LL_DMA_SetMemorySize(DMA2, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_BYTE);
 
+  /* SPI3_TX Init */
+  LL_DMA_SetPeriphRequest(DMA2, LL_DMA_CHANNEL_2, LL_DMA_REQUEST_3);
+
+  LL_DMA_SetDataTransferDirection(DMA2, LL_DMA_CHANNEL_2, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
+
+  LL_DMA_SetChannelPriorityLevel(DMA2, LL_DMA_CHANNEL_2, LL_DMA_PRIORITY_LOW);
+
+  LL_DMA_SetMode(DMA2, LL_DMA_CHANNEL_2, LL_DMA_MODE_NORMAL);
+
+  LL_DMA_SetPeriphIncMode(DMA2, LL_DMA_CHANNEL_2, LL_DMA_PERIPH_NOINCREMENT);
+
+  LL_DMA_SetMemoryIncMode(DMA2, LL_DMA_CHANNEL_2, LL_DMA_MEMORY_INCREMENT);
+
+  LL_DMA_SetPeriphSize(DMA2, LL_DMA_CHANNEL_2, LL_DMA_PDATAALIGN_BYTE);
+
+  LL_DMA_SetMemorySize(DMA2, LL_DMA_CHANNEL_2, LL_DMA_MDATAALIGN_BYTE);
+
   /* USER CODE BEGIN SPI3_Init 1 */
 
   /* USER CODE END SPI3_Init 1 */
@@ -95,5 +112,25 @@ void MX_SPI3_Init(void)
 }
 
 /* USER CODE BEGIN 1 */
+void SPI_TransmitReceive(SPI_TypeDef *SPIx, uint8_t len, uint8_t *tx_buffer, uint8_t *rx_buffer) {
+	LL_SPI_Enable(SPIx);
 
+	LL_SPI_TransmitData8(SPIx, tx_buffer[0]);
+
+	for (int i = 0; i < len - 1; i++) {
+	  while ( !LL_SPI_IsActiveFlag_TXE(SPIx) ); // wait until TXE is set
+	  LL_SPI_TransmitData8(SPIx, tx_buffer[i + 1]);
+	  while ( !LL_SPI_IsActiveFlag_RXNE(SPIx) ); // wait until RXNE is set
+	  rx_buffer[i] = LL_SPI_ReceiveData8(SPIx); // read DR (clears RXNE)
+	}
+
+	while ( !LL_SPI_IsActiveFlag_RXNE(SPIx) ); // wait until RXNE is set
+	rx_buffer[len - 1] = LL_SPI_ReceiveData8(SPIx); // read DR (clears RXNE)
+}
+
+void SPI_Disable(SPI_TypeDef *SPIx) {
+	while (LL_SPI_GetTxFIFOLevel(SPIx) != LL_SPI_TX_FIFO_EMPTY); // wait for TX FIFO to become empty
+	while (LL_SPI_IsActiveFlag_BSY(SPIx)); // wait for BSY flag to go low
+	LL_SPI_Disable(SPIx);
+}
 /* USER CODE END 1 */
