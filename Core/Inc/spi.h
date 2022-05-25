@@ -44,7 +44,7 @@ void SPI_Disable(SPI_TypeDef *SPIx);
 void SPI_Enable_DMA_Tx_Request(SPI_TypeDef *SPIx);
 void SPI_Enable_DMA_Rx_Request(SPI_TypeDef *SPIx);
 void SPI_Enable_RXNE_TXE_Interrupts(SPI_TypeDef *SPIx);
-void SPI_Enable(SPI_TypeDef *SPIx);
+void SPI_Start_Transfer(SPI_TypeDef *SPIx);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

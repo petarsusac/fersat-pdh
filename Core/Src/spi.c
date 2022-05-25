@@ -19,7 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "spi.h"
-
+#include "ads131m08.h"
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -126,7 +126,8 @@ void SPI_Enable_RXNE_TXE_Interrupts(SPI_TypeDef *SPIx) {
 	LL_SPI_EnableIT_TXE(SPIx);
 }
 
-void SPI_Enable(SPI_TypeDef *SPIx) {
+void SPI_Start_Transfer(SPI_TypeDef *SPIx) {
+	LL_GPIO_ResetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN);
 	LL_SPI_Enable(SPIx);
 }
 

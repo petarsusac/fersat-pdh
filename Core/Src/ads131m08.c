@@ -2,6 +2,8 @@
 
 void ADC_first_read(SPI_TypeDef *SPIx);
 void ADC_DMA_init();
+void ADC_Enable_SPI_DMA_transfer();
+void ADC_Set_DMA_Data_Length();
 
 volatile uint16_t current_sample_count;
 volatile uint8_t drdy_it_initialized;
@@ -25,8 +27,8 @@ void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	adc_struct->num_samples = NUM_SAMPLES;
 
 	ads131m08 = adc_struct;
-
 	ADC_first_read(SPIx);
+	ADC_DMA_init();
 	drdy_it_initialized = 1;
 }
 
@@ -51,14 +53,13 @@ void ADC_first_read(SPI_TypeDef *SPIx) {
 // Called by DRDY interrupt routine, starts SPI DMA transfer.
 void ADC_DRDY_interrupt_handler() {
 	if (drdy_it_initialized && current_sample_count < NUM_SAMPLES) {
+		ADC_Set_DMA_Data_Length();
 		DMA_Reload_Memory_Address(ads131m08->DMAx, LL_DMA_CHANNEL_1, samples + current_sample_count++ * BYTES_PER_SAMPLE);
-
 		ADC_Enable_SPI_DMA_transfer();
 
 		NVIC_DisableIRQ(ADC_DRDY_IRQn); // Interrupt is re-enabled in DMA transfer complete routine
 
-		LL_GPIO_ResetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN);
-		SPI_Enable(ads131m08->SPIx);
+		SPI_Start_Transfer(ads131m08->SPIx);
 	}
 }
 

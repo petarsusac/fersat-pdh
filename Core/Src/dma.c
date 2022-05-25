@@ -20,7 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "dma.h"
-
+#include "ads131m08.h"
 /* USER CODE BEGIN 0 */
 volatile uint8_t tc = 0;
 /* USER CODE END 0 */

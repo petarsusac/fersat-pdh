@@ -46,6 +46,7 @@ void DMA_Set_Channel_Data_Length(DMA_TypeDef *DMAx, uint32_t channel, uint32_t l
 void DMA_Reload_Memory_Address(DMA_TypeDef *DMAx, uint32_t channel, uint8_t *mem_addr);
 void DMA_Transfer_Complete_RX_interrupt_handler();
 void DMA_Transfer_Complete_TX_interrupt_handler();
+void DMA_Enable_CH1_CH2(DMA_TypeDef *DMAx);
 void DMA_Disable(SPI_TypeDef *SPIx);
 /* USER CODE END Prototypes */
 
