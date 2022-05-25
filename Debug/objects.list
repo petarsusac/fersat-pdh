@@ -1,4 +1,4 @@
-"./Core/Src/adc.o"
+"./Core/Src/ads131m08.o"
 "./Core/Src/dma.o"
 "./Core/Src/gpio.o"
 "./Core/Src/main.o"

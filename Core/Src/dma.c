@@ -53,12 +53,23 @@ void MX_DMA_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
-void ADC_SPI_DMA_init() {
-	LL_DMA_SetPeriphAddress(DMA2, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(SB_SPIx));
-	LL_DMA_SetPeriphAddress(DMA2, LL_DMA_CHANNEL_2, LL_SPI_DMA_GetRegAddr(SB_SPIx));
-	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_CHANNEL_2, (uint32_t) dummy_bytes);
-	LL_DMA_EnableIT_TC(DMA2, LL_DMA_CHANNEL_1);
-	LL_DMA_EnableIT_TC(DMA2, LL_DMA_CHANNEL_2);
+void DMA_Channel_Init(DMA_TypeDef *DMAx, uint32_t channel, uint32_t periph_addr, uint8_t *mem_addr) {
+	LL_DMA_SetPeriphAddress(DMAx, channel, periph_addr);
+	LL_DMA_SetMemoryAddress(DMAx, channel, (uint32_t) mem_addr);
+	LL_DMA_EnableIT_TC(DMAx, channel);
+}
+
+void DMA_Set_Channel_Data_Length(DMA_TypeDef *DMAx, uint32_t channel, uint32_t length) {
+	LL_DMA_SetDataLength(DMAx, channel, length);
+}
+
+void DMA_Reload_Memory_Address(DMA_TypeDef *DMAx, uint32_t channel, uint8_t *mem_addr) {
+	LL_DMA_SetMemoryAddress(DMAx, channel, (uint32_t) mem_addr);
+}
+
+void DMA_Enable_CH1_CH2(DMA_TypeDef *DMAx) {
+	LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_1);
+	LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_2);
 }
 
 void DMA_Transfer_Complete_RX_interrupt_handler() {

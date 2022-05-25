@@ -41,7 +41,9 @@ extern "C" {
 void MX_DMA_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void ADC_SPI_DMA_init();
+void DMA_Channel_Init(DMA_TypeDef *DMAx, uint32_t channel, uint32_t periph_addr, uint8_t *mem_addr);
+void DMA_Set_Channel_Data_Length(DMA_TypeDef *DMAx, uint32_t channel, uint32_t length);
+void DMA_Reload_Memory_Address(DMA_TypeDef *DMAx, uint32_t channel, uint8_t *mem_addr);
 void DMA_Transfer_Complete_RX_interrupt_handler();
 void DMA_Transfer_Complete_TX_interrupt_handler();
 void DMA_Disable(SPI_TypeDef *SPIx);

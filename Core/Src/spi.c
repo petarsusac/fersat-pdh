@@ -112,6 +112,25 @@ void MX_SPI3_Init(void)
 }
 
 /* USER CODE BEGIN 1 */
+
+void SPI_Enable_DMA_Rx_Request(SPI_TypeDef *SPIx) {
+	LL_SPI_EnableDMAReq_RX(SPIx);
+}
+
+void SPI_Enable_DMA_Tx_Request(SPI_TypeDef *SPIx) {
+	LL_SPI_EnableDMAReq_TX(SPIx);
+}
+
+void SPI_Enable_RXNE_TXE_Interrupts(SPI_TypeDef *SPIx) {
+	LL_SPI_EnableIT_RXNE(SPIx);
+	LL_SPI_EnableIT_TXE(SPIx);
+}
+
+void SPI_Enable(SPI_TypeDef *SPIx) {
+	LL_SPI_Enable(SPIx);
+}
+
+
 void SPI_TransmitReceive(SPI_TypeDef *SPIx, uint8_t len, uint8_t *tx_buffer, uint8_t *rx_buffer) {
 	LL_SPI_Enable(SPIx);
 

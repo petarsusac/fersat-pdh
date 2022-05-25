@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include "ads131m08.h"
 #include "main.h"
 #include "dma.h"
 #include "spi.h"
@@ -25,7 +26,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,8 +45,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t dummy_bytes[NUM_SAMPLES];
-volatile uint8_t rx_buffer[NUM_SAMPLES * BYTES_PER_SAMPLE];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,10 +97,8 @@ int main(void)
   MX_DMA_Init();
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
-  ADC_first_read(SB_SPIx);
-  ADC_SPI_DMA_init();
-  ADC_set_RX_buffer(rx_buffer);
-  ADC_set_num_samples(NUM_SAMPLES);
+  ADS131M08 adc;
+  ADC_Init(&adc, SB_SPIx, SB_DMAx);
   NVIC_EnableIRQ(EXTI4_IRQn);
   /* USER CODE END 2 */
 
