@@ -121,6 +121,11 @@ void SPI_Enable_DMA_Tx_Request(SPI_TypeDef *SPIx) {
 	LL_SPI_EnableDMAReq_TX(SPIx);
 }
 
+void SPI_Disable_DMA_Requests(SPI_TypeDef *SPIx) {
+	LL_SPI_DisableDMAReq_RX(SPIx);
+	LL_SPI_DisableDMAReq_TX(SPIx);
+}
+
 void SPI_Enable_RXNE_TXE_Interrupts(SPI_TypeDef *SPIx) {
 	LL_SPI_EnableIT_RXNE(SPIx);
 	LL_SPI_EnableIT_TXE(SPIx);

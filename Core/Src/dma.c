@@ -98,11 +98,9 @@ void DMA_Transfer_Complete_TX_interrupt_handler() {
 
 
 void DMA_Disable(SPI_TypeDef *SPIx) {
-	// SPI Disable procedure
 	SPI_Disable(SPIx);
 
-	LL_SPI_DisableDMAReq_RX(SPIx);
-	LL_SPI_DisableDMAReq_TX(SPIx);
+	SPI_Disable_DMA_Requests(SPIx);
 
 	LL_GPIO_SetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN);
 	NVIC_EnableIRQ(EXTI4_IRQn);

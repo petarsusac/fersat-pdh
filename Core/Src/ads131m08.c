@@ -25,6 +25,7 @@ void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	adc_struct->SPIx = SPIx;
 	adc_struct->DMAx = DMAx;
 	adc_struct->num_samples = NUM_SAMPLES;
+	adc_struct->samples = samples;
 
 	ads131m08 = adc_struct;
 	ADC_first_read(SPIx);

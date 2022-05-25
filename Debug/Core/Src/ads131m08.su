@@ -3,8 +3,8 @@
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:956:22:LL_GPIO_SetOutputPin	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:985:22:LL_GPIO_ResetOutputPin	16	static
 ../Core/Src/ads131m08.c:20:6:ADC_Init	24	static
-../Core/Src/ads131m08.c:37:6:ADC_first_read	56	static
-../Core/Src/ads131m08.c:54:6:ADC_DRDY_interrupt_handler	16	static
-../Core/Src/ads131m08.c:66:6:ADC_DMA_init	16	static
-../Core/Src/ads131m08.c:71:6:ADC_Set_DMA_Data_Length	8	static
-../Core/Src/ads131m08.c:76:6:ADC_Enable_SPI_DMA_transfer	8	static
+../Core/Src/ads131m08.c:38:6:ADC_first_read	56	static
+../Core/Src/ads131m08.c:55:6:ADC_DRDY_interrupt_handler	16	static
+../Core/Src/ads131m08.c:67:6:ADC_DMA_init	16	static
+../Core/Src/ads131m08.c:72:6:ADC_Set_DMA_Data_Length	8	static
+../Core/Src/ads131m08.c:77:6:ADC_Enable_SPI_DMA_transfer	8	static
