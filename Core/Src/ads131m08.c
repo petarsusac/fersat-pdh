@@ -30,11 +30,13 @@ void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	ads131m08 = adc_struct;
 	ADC_first_read(SPIx);
 	ADC_DMA_init();
+	current_sample_count = 0;
 	drdy_it_initialized = 1;
 }
 
 // Perform two sample reads to clear ADC's 2-deep FIFO buffer and ensure predictable
-// DRDY pin behavior.
+// DRDY pin behavior. Alternatively, a short pulse on applied to the SYNC/RESET pin
+// can be used for this purpose.
 void ADC_first_read(SPI_TypeDef *SPIx) {
 	uint8_t rx_buffer[30];
 

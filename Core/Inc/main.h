@@ -86,15 +86,6 @@ void Error_Handler(void);
                                                                  0 bit  for subpriority */
 #endif
 /* USER CODE BEGIN Private defines */
-#define SB_SPIx SPI3
-#define SB_DMAx DMA2
-
-#define TEMP1_CS_GPIOx	GPIOA
-#define TEMP1_CS_PIN	LL_GPIO_PIN_3
-#define TEMP2_CS_GPIOx	GPIOA
-#define TEMP2_CS_PIN	LL_GPIO_PIN_10
-#define TEMP3_CS_GPIOx	GPIOA
-#define TEMP3_CS_PIN	LL_GPIO_PIN_11
 
 /* USER CODE END Private defines */
 

@@ -17,7 +17,6 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "ads131m08.h"
 #include "main.h"
 #include "dma.h"
 #include "spi.h"
@@ -26,6 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sensor_board.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,7 +65,6 @@ void wait_for_10_ms();
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  NVIC_DisableIRQ(EXTI4_IRQn); // disable DRDY interrupts until setup is completed
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -97,9 +96,8 @@ int main(void)
   MX_DMA_Init();
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
-  ADS131M08 adc;
-  ADC_Init(&adc, SB_SPIx, SB_DMAx);
-  NVIC_EnableIRQ(EXTI4_IRQn);
+  Sensor_Board sb;
+  SB_Init(sb);
   /* USER CODE END 2 */
 
   /* Infinite loop */
