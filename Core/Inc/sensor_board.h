@@ -2,21 +2,18 @@
 #define INC_SENSOR_BOARD_H_
 
 #include "ads131m08.h"
+#include "adt7301.h"
 
 #define SB_SPIx SPI3
 #define SB_DMAx DMA2
 
-#define TEMP1_CS_GPIOx	GPIOA
-#define TEMP1_CS_PIN	LL_GPIO_PIN_3
-#define TEMP2_CS_GPIOx	GPIOA
-#define TEMP2_CS_PIN	LL_GPIO_PIN_10
-#define TEMP3_CS_GPIOx	GPIOA
-#define TEMP3_CS_PIN	LL_GPIO_PIN_11
-
 typedef struct {
-	ADS131M08 adc;
+	ADS131M08 *adc;
+	ADT7301 *tmp_sensor;
 } Sensor_Board;
 
-void SB_Init(Sensor_Board sb);
+void SB_Init(Sensor_Board *sb);
+void SB_Align_Samples();
+void SB_Get_Temperature_Reading();
 
 #endif /* INC_SENSOR_BOARD_H_ */

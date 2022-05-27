@@ -22,9 +22,11 @@ typedef struct {
 	DMA_TypeDef *DMAx;
 	uint16_t num_samples;
 	uint8_t *samples;
+	volatile uint8_t sampling_complete_flag;
 } ADS131M08;
 
 void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx);
 void ADC_DRDY_interrupt_handler();
+void ADC_Start_Sampling();
 
 #endif /* INC_ADS131M08_H_ */

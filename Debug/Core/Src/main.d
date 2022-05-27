@@ -22,7 +22,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/spi.h \
  ../Core/Inc/ads131m08.h ../Core/Inc/spi.h ../Core/Inc/gpio.h \
  ../Core/Inc/dma.h ../Core/Inc/tim.h ../Core/Inc/gpio.h \
- ../Core/Inc/sensor_board.h
+ ../Core/Inc/sensor_board.h ../Core/Inc/adt7301.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_dma.h:
 ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h:
@@ -54,3 +54,4 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/tim.h:
 ../Core/Inc/gpio.h:
 ../Core/Inc/sensor_board.h:
+../Core/Inc/adt7301.h:

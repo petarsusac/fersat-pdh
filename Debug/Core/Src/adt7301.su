@@ -1,0 +1,6 @@
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:956:22:LL_GPIO_SetOutputPin	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_gpio.h:985:22:LL_GPIO_ResetOutputPin	16	static
+../Core/Src/adt7301.c:5:6:ADT7301_Init	16	static
+../Core/Src/adt7301.c:10:6:ADT7301_Collect_Sample	24	static
+../Core/Src/adt7301.c:30:6:ADT7301_Shutdown	24	static
+../Core/Src/adt7301.c:41:6:ADT7301_Wakeup	24	static

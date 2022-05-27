@@ -18,7 +18,6 @@ ADS131M08 *ads131m08;
 // that are necessary to synchronize DRDY pin and allocates memory for the samples.
 // This function can also be used to perform initial ADC configuration if necessary.
 void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
-	// insert memory allocation here
 	static uint8_t samples_array[NUM_SAMPLES * BYTES_PER_SAMPLE];
 	samples = samples_array;
 
@@ -26,12 +25,17 @@ void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	adc_struct->DMAx = DMAx;
 	adc_struct->num_samples = NUM_SAMPLES;
 	adc_struct->samples = samples;
+	adc_struct->sampling_complete_flag = 0;
 
 	ads131m08 = adc_struct;
-	ADC_first_read(SPIx);
 	ADC_DMA_init();
 	current_sample_count = 0;
+}
+
+void ADC_Start_Sampling() {
+	ADC_first_read(ads131m08->SPIx);
 	drdy_it_initialized = 1;
+	NVIC_EnableIRQ(ADC_DRDY_IRQn);
 }
 
 // Perform two sample reads to clear ADC's 2-deep FIFO buffer and ensure predictable
@@ -63,6 +67,9 @@ void ADC_DRDY_interrupt_handler() {
 		NVIC_DisableIRQ(ADC_DRDY_IRQn); // Interrupt is re-enabled in DMA transfer complete routine
 
 		SPI_Start_Transfer(ads131m08->SPIx);
+	} else if (current_sample_count >= NUM_SAMPLES) {
+		NVIC_DisableIRQ(ADC_DRDY_IRQn);
+		ads131m08->sampling_complete_flag = 1;
 	}
 }
 

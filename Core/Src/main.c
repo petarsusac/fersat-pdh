@@ -97,7 +97,9 @@ int main(void)
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
   Sensor_Board sb;
-  SB_Init(sb);
+  SB_Init(&sb);
+  SB_Align_Samples();
+  SB_Get_Temperature_Reading();
   /* USER CODE END 2 */
 
   /* Infinite loop */
