@@ -5,6 +5,8 @@ ADT7301 *adt7301;
 void ADT7301_Init(ADT7301 *adt7301_struct, SPI_TypeDef *SPIx) {
 	adt7301_struct->SPIx = SPIx;
 	adt7301 = adt7301_struct;
+
+	SPI_Set_Mode(CPOL1_CPHA1, SPIx);
 }
 
 void ADT7301_Collect_Sample(temp_sensor ts) {

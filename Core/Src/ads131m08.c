@@ -28,6 +28,7 @@ void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	adc_struct->sampling_complete_flag = 0;
 
 	ads131m08 = adc_struct;
+	SPI_Set_Mode(CPOL0_CPHA1, SPIx);
 	ADC_DMA_init();
 	current_sample_count = 0;
 }

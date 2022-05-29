@@ -158,4 +158,14 @@ void SPI_Disable(SPI_TypeDef *SPIx) {
 	while (LL_SPI_IsActiveFlag_BSY(SPIx)); // wait for BSY flag to go low
 	LL_SPI_Disable(SPIx);
 }
+
+void SPI_Set_Mode(SPI_mode mode, SPI_TypeDef *SPIx) {
+	if (mode == CPOL1_CPHA1) {
+		LL_SPI_SetClockPolarity(SPIx, LL_SPI_POLARITY_HIGH);
+		LL_SPI_SetClockPhase(SPIx, LL_SPI_PHASE_2EDGE);
+	} else if (mode == CPOL0_CPHA1) {
+		LL_SPI_SetClockPolarity(SPIx, LL_SPI_POLARITY_LOW);
+		LL_SPI_SetClockPhase(SPIx, LL_SPI_PHASE_2EDGE);
+	}
+}
 /* USER CODE END 1 */

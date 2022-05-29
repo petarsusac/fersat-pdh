@@ -10,7 +10,7 @@ void SB_Init(Sensor_Board *sb) {
 	static ADT7301 ts;
 	sb->tmp_sensor = &ts;
 	sensor_board = sb;
-	ADT7301_Init(&ts, SB_SPIx);
+
 	ADC_Init(&adc, SB_SPIx, SB_DMAx);
 	ADC_Start_Sampling();
 }
@@ -37,6 +37,8 @@ void SB_Align_Samples() {
 }
 
 void SB_Get_Temperature_Readings() {
+	ADT7301_Init(sensor_board->tmp_sensor, SB_SPIx);
+
 	ADT7301_Wakeup(TEMP1);
 	ADT7301_Collect_Sample(TEMP1);
 	ADT7301_Shutdown(TEMP1);

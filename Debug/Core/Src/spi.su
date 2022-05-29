@@ -11,6 +11,8 @@
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:358:22:LL_SPI_Enable	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:370:22:LL_SPI_Disable	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:426:22:LL_SPI_SetStandard	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:455:22:LL_SPI_SetClockPhase	16	static
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:484:22:LL_SPI_SetClockPolarity	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:874:22:LL_SPI_DisableNSSPulseMgt	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:905:26:LL_SPI_IsActiveFlag_RXNE	16	static
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_spi.h:916:26:LL_SPI_IsActiveFlag_TXE	16	static
@@ -33,3 +35,4 @@
 ../Core/Src/spi.c:134:6:SPI_Start_Transfer	16	static
 ../Core/Src/spi.c:140:6:SPI_TransmitReceive	40	static
 ../Core/Src/spi.c:156:6:SPI_Disable	16	static
+../Core/Src/spi.c:162:6:SPI_Set_Mode	16	static
