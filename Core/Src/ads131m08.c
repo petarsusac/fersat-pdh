@@ -1,9 +1,9 @@
 #include <ads131m08.h>
 
-void ADC_first_read(SPI_TypeDef *SPIx);
-void ADC_DMA_init();
-void ADC_Enable_SPI_DMA_transfer();
-void ADC_Set_DMA_Data_Length();
+static void ADC_first_read(SPI_TypeDef *SPIx);
+static void ADC_DMA_init();
+static void ADC_Enable_SPI_DMA_transfer();
+static void ADC_Set_DMA_Data_Length();
 
 volatile uint16_t current_sample_count;
 volatile uint8_t drdy_it_initialized;
@@ -41,7 +41,7 @@ void ADC_Start_Sampling() {
 // Perform two sample reads to clear ADC's 2-deep FIFO buffer and ensure predictable
 // DRDY pin behavior. Alternatively, a short pulse on applied to the SYNC/RESET pin
 // can be used for this purpose.
-void ADC_first_read(SPI_TypeDef *SPIx) {
+static void ADC_first_read(SPI_TypeDef *SPIx) {
 	uint8_t rx_buffer[30];
 
 	LL_GPIO_ResetOutputPin(ADC_CS_GPIOx, ADC_CS_PIN); // \CS low
@@ -73,17 +73,17 @@ void ADC_DRDY_interrupt_handler() {
 	}
 }
 
-void ADC_DMA_init() {
+static void ADC_DMA_init() {
 	DMA_Channel_Init(ads131m08->DMAx, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(ads131m08->SPIx), samples);
 	DMA_Channel_Init(ads131m08->DMAx, LL_DMA_CHANNEL_2, LL_SPI_DMA_GetRegAddr(ads131m08->SPIx), dummy_bytes);
 }
 
-void ADC_Set_DMA_Data_Length() {
+static void ADC_Set_DMA_Data_Length() {
 	DMA_Set_Channel_Data_Length(ads131m08->DMAx, LL_DMA_CHANNEL_1, BYTES_PER_SAMPLE);
 	DMA_Set_Channel_Data_Length(ads131m08->DMAx, LL_DMA_CHANNEL_2, BYTES_PER_SAMPLE);
 }
 
-void ADC_Enable_SPI_DMA_transfer() {
+static void ADC_Enable_SPI_DMA_transfer() {
 	SPI_Enable_DMA_Rx_Request(ads131m08->SPIx);
 	DMA_Enable_CH1_CH2(ads131m08->DMAx);
 	SPI_Enable_DMA_Tx_Request(ads131m08->SPIx);

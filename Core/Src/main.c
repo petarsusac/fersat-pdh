@@ -99,7 +99,7 @@ int main(void)
   Sensor_Board sb;
   SB_Init(&sb);
   SB_Align_Samples();
-  SB_Get_Temperature_Reading();
+  SB_Get_Temperature_Readings();
   /* USER CODE END 2 */
 
   /* Infinite loop */

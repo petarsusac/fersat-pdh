@@ -15,6 +15,14 @@ void ADT7301_Collect_Sample(temp_sensor ts) {
 		LL_GPIO_ResetOutputPin(TEMP1_CS_GPIOx, TEMP1_CS_PIN);
 		SPI_TransmitReceive(adt7301->SPIx, 2, dummy_bytes, sample_bytes);
 		LL_GPIO_SetOutputPin(TEMP1_CS_GPIOx, TEMP1_CS_PIN);
+	} else if (ts == TEMP2) {
+		LL_GPIO_ResetOutputPin(TEMP2_CS_GPIOx, TEMP2_CS_PIN);
+		SPI_TransmitReceive(adt7301->SPIx, 2, dummy_bytes, sample_bytes);
+		LL_GPIO_SetOutputPin(TEMP2_CS_GPIOx, TEMP2_CS_PIN);
+	} else if (ts == TEMP3) {
+		LL_GPIO_ResetOutputPin(TEMP3_CS_GPIOx, TEMP3_CS_PIN);
+		SPI_TransmitReceive(adt7301->SPIx, 2, dummy_bytes, sample_bytes);
+		LL_GPIO_SetOutputPin(TEMP3_CS_GPIOx, TEMP3_CS_PIN);
 	}
 
 	int16_t tmp = (sample_bytes[0] << 8) | sample_bytes[1];
@@ -23,8 +31,8 @@ void ADT7301_Collect_Sample(temp_sensor ts) {
 		tmp -= 16384;
 	}
 
-	adt7301->sample = (float)tmp;
-	adt7301->sample /= 32.;
+	adt7301->samples[ts] = (float)tmp;
+	adt7301->samples[ts] /= 32.;
 }
 
 void ADT7301_Shutdown(temp_sensor ts) {
@@ -35,6 +43,14 @@ void ADT7301_Shutdown(temp_sensor ts) {
 		LL_GPIO_ResetOutputPin(TEMP1_CS_GPIOx, TEMP1_CS_PIN);
 		SPI_TransmitReceive(adt7301->SPIx, 2, shutdown_cmd, dummy_buffer);
 		LL_GPIO_SetOutputPin(TEMP1_CS_GPIOx, TEMP1_CS_PIN);
+	} else if (ts == TEMP2) {
+		LL_GPIO_ResetOutputPin(TEMP2_CS_GPIOx, TEMP2_CS_PIN);
+		SPI_TransmitReceive(adt7301->SPIx, 2, shutdown_cmd, dummy_buffer);
+		LL_GPIO_SetOutputPin(TEMP2_CS_GPIOx, TEMP2_CS_PIN);
+	} else if (ts == TEMP3) {
+		LL_GPIO_ResetOutputPin(TEMP3_CS_GPIOx, TEMP3_CS_PIN);
+		SPI_TransmitReceive(adt7301->SPIx, 2, shutdown_cmd, dummy_buffer);
+		LL_GPIO_SetOutputPin(TEMP3_CS_GPIOx, TEMP3_CS_PIN);
 	}
 }
 
@@ -46,6 +62,14 @@ void ADT7301_Wakeup(temp_sensor ts) {
 		LL_GPIO_ResetOutputPin(TEMP1_CS_GPIOx, TEMP1_CS_PIN);
 		SPI_TransmitReceive(adt7301->SPIx, 2, wakeup_cmd, dummy_buffer);
 		LL_GPIO_SetOutputPin(TEMP1_CS_GPIOx, TEMP1_CS_PIN);
+	} else if (ts == TEMP2) {
+		LL_GPIO_ResetOutputPin(TEMP2_CS_GPIOx, TEMP2_CS_PIN);
+		SPI_TransmitReceive(adt7301->SPIx, 2, wakeup_cmd, dummy_buffer);
+		LL_GPIO_SetOutputPin(TEMP2_CS_GPIOx, TEMP2_CS_PIN);
+	} else if (ts == TEMP3) {
+		LL_GPIO_ResetOutputPin(TEMP3_CS_GPIOx, TEMP3_CS_PIN);
+		SPI_TransmitReceive(adt7301->SPIx, 2, wakeup_cmd, dummy_buffer);
+		LL_GPIO_SetOutputPin(TEMP3_CS_GPIOx, TEMP3_CS_PIN);
 	}
 }
 

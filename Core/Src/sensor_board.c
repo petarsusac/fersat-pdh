@@ -2,7 +2,7 @@
 
 Sensor_Board *sensor_board;
 uint16_t aligned_samples[NUM_SAMPLES * 8];
-float temperature;
+float *temperature;
 
 void SB_Init(Sensor_Board *sb) {
 	static ADS131M08 adc;
@@ -36,12 +36,20 @@ void SB_Align_Samples() {
 	}
 }
 
-void SB_Get_Temperature_Reading() {
+void SB_Get_Temperature_Readings() {
 	ADT7301_Wakeup(TEMP1);
 	ADT7301_Collect_Sample(TEMP1);
 	ADT7301_Shutdown(TEMP1);
 
-	temperature = sensor_board->tmp_sensor->sample;
+	ADT7301_Wakeup(TEMP2);
+	ADT7301_Collect_Sample(TEMP2);
+	ADT7301_Shutdown(TEMP2);
+
+//	ADT7301_Wakeup(TEMP3);
+//	ADT7301_Collect_Sample(TEMP3);
+//	ADT7301_Shutdown(TEMP3);
+
+	temperature = sensor_board->tmp_sensor->samples;
 }
 
 

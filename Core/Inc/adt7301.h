@@ -13,13 +13,13 @@
 
 typedef struct {
 	SPI_TypeDef *SPIx;
-	float sample;
+	float samples[3];
 } ADT7301;
 
 typedef enum {
-	TEMP1,
-	TEMP2,
-	TEMP3
+	TEMP1 = 0,
+	TEMP2 = 1,
+	TEMP3 = 2
 } temp_sensor;
 
 void ADT7301_Init(ADT7301 *adt7301_struct, SPI_TypeDef *SPIx);
