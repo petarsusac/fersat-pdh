@@ -65,6 +65,7 @@ void wait_for_10_ms();
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  NVIC_DisableIRQ(ADC_DRDY_IRQn);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -98,6 +99,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   Sensor_Board sb;
   SB_Init(&sb);
+  SB_Start_ADC_Sampling();
   SB_Align_Samples();
   SB_Get_Temperature_Readings();
   /* USER CODE END 2 */

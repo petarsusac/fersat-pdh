@@ -10,8 +10,10 @@ void SB_Init(Sensor_Board *sb) {
 	static ADT7301 ts;
 	sb->tmp_sensor = &ts;
 	sensor_board = sb;
+}
 
-	ADC_Init(&adc, SB_SPIx, SB_DMAx);
+void SB_Start_ADC_Sampling() {
+	ADC_Init(sensor_board->adc, SB_SPIx, SB_DMAx);
 	ADC_Start_Sampling();
 }
 
