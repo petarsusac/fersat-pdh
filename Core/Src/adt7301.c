@@ -2,6 +2,7 @@
 
 ADT7301 *adt7301;
 
+// Initializes required memory structures and sets SPI mode.
 void ADT7301_Init(ADT7301 *adt7301_struct, SPI_TypeDef *SPIx) {
 	adt7301_struct->SPIx = SPIx;
 	adt7301 = adt7301_struct;
@@ -9,6 +10,8 @@ void ADT7301_Init(ADT7301 *adt7301_struct, SPI_TypeDef *SPIx) {
 	SPI_Set_Mode(CPOL1_CPHA1, SPIx);
 }
 
+// Collects a sample from one temperature sensor, specified by parameter ts.
+// Also performs conversion from raw data to a floating point temperature value.
 void ADT7301_Collect_Sample(temp_sensor ts) {
 	uint8_t sample_bytes[2];
 	uint8_t dummy_bytes[2] = {0};
@@ -37,6 +40,7 @@ void ADT7301_Collect_Sample(temp_sensor ts) {
 	adt7301->samples[ts] /= 32.;
 }
 
+// Puts temperature sensor ts into shutdown mode.
 void ADT7301_Shutdown(temp_sensor ts) {
 	uint8_t dummy_buffer[2];
 	uint8_t shutdown_cmd[2] = {0x20, 0x00};
@@ -56,6 +60,7 @@ void ADT7301_Shutdown(temp_sensor ts) {
 	}
 }
 
+// Wakes sensor up from shutdown mode.
 void ADT7301_Wakeup(temp_sensor ts) {
 	uint8_t dummy_buffer[2];
 	uint8_t wakeup_cmd[2] = {0};

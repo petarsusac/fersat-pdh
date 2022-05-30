@@ -14,9 +14,9 @@ uint8_t dummy_bytes[BYTES_PER_SAMPLE];
 
 ADS131M08 *ads131m08;
 
-// Function used to perform ADC initialization. Performs two SPI read operations
-// that are necessary to synchronize DRDY pin and allocates memory for the samples.
-// This function can also be used to perform initial ADC configuration if necessary.
+// Function used to perform ADC initialization, prepares the required memory
+// structures and allocates memory for samples, sets SPI mode etc. This
+// function can also be used to perform initial ADC configuration if necessary.
 void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	static uint8_t samples_array[NUM_SAMPLES * BYTES_PER_SAMPLE];
 	samples = samples_array;
@@ -31,8 +31,10 @@ void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	SPI_Set_Mode(CPOL0_CPHA1, SPIx);
 	ADC_DMA_init();
 	current_sample_count = 0;
+	drdy_it_initialized = 0;
 }
 
+// Enables DRDY interrupts and starts sample collection.
 void ADC_Start_Sampling() {
 	ADC_first_read(ads131m08->SPIx);
 	drdy_it_initialized = 1;
@@ -71,6 +73,7 @@ void ADC_DRDY_interrupt_handler() {
 	} else if (current_sample_count >= NUM_SAMPLES) {
 		NVIC_DisableIRQ(ADC_DRDY_IRQn);
 		ads131m08->sampling_complete_flag = 1;
+		drdy_it_initialized = 0;
 	}
 }
 
