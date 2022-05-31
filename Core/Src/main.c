@@ -99,9 +99,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
   Sensor_Board sb;
   SB_Init(&sb);
-  SB_Start_ADC_Sampling();
-  SB_Align_Samples();
-  SB_Get_Temperature_Readings();
+  SB_Start_ADC_Sampling(&sb);
+  SB_Align_Samples(&sb);
+  SB_Get_Temperature_Readings(&sb);
   /* USER CODE END 2 */
 
   /* Infinite loop */

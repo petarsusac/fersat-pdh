@@ -8,8 +8,6 @@ static void ADC_Set_DMA_Data_Length();
 volatile uint16_t current_sample_count;
 volatile uint8_t drdy_it_initialized;
 
-uint8_t *samples;
-
 uint8_t dummy_bytes[BYTES_PER_SAMPLE];
 
 ADS131M08 *ads131m08;
@@ -19,24 +17,23 @@ ADS131M08 *ads131m08;
 // function can also be used to perform initial ADC configuration if necessary.
 void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx) {
 	static uint8_t samples_array[NUM_SAMPLES * BYTES_PER_SAMPLE];
-	samples = samples_array;
 
 	adc_struct->SPIx = SPIx;
 	adc_struct->DMAx = DMAx;
 	adc_struct->num_samples = NUM_SAMPLES;
-	adc_struct->samples = samples;
+	adc_struct->samples = samples_array;
 	adc_struct->sampling_complete_flag = 0;
 
 	ads131m08 = adc_struct;
 	SPI_Set_Mode(CPOL0_CPHA1, SPIx);
-	ADC_DMA_init();
+	ADC_DMA_init(adc_struct);
 	current_sample_count = 0;
 	drdy_it_initialized = 0;
 }
 
 // Enables DRDY interrupts and starts sample collection.
-void ADC_Start_Sampling() {
-	ADC_first_read(ads131m08->SPIx);
+void ADC_Start_Sampling(ADS131M08 *adc) {
+	ADC_first_read(adc->SPIx);
 	drdy_it_initialized = 1;
 	NVIC_EnableIRQ(ADC_DRDY_IRQn);
 }
@@ -64,7 +61,7 @@ static void ADC_first_read(SPI_TypeDef *SPIx) {
 void ADC_DRDY_interrupt_handler() {
 	if (drdy_it_initialized && current_sample_count < NUM_SAMPLES) {
 		ADC_Set_DMA_Data_Length();
-		DMA_Reload_Memory_Address(ads131m08->DMAx, LL_DMA_CHANNEL_1, samples + current_sample_count++ * BYTES_PER_SAMPLE);
+		DMA_Reload_Memory_Address(ads131m08->DMAx, LL_DMA_CHANNEL_1, ads131m08->samples + current_sample_count++ * BYTES_PER_SAMPLE);
 		ADC_Enable_SPI_DMA_transfer();
 
 		NVIC_DisableIRQ(ADC_DRDY_IRQn); // Interrupt is re-enabled in DMA transfer complete routine
@@ -77,9 +74,9 @@ void ADC_DRDY_interrupt_handler() {
 	}
 }
 
-static void ADC_DMA_init() {
-	DMA_Channel_Init(ads131m08->DMAx, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(ads131m08->SPIx), samples);
-	DMA_Channel_Init(ads131m08->DMAx, LL_DMA_CHANNEL_2, LL_SPI_DMA_GetRegAddr(ads131m08->SPIx), dummy_bytes);
+static void ADC_DMA_init(ADS131M08 *adc) {
+	DMA_Channel_Init(adc->DMAx, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(ads131m08->SPIx), ads131m08->samples);
+	DMA_Channel_Init(adc->DMAx, LL_DMA_CHANNEL_2, LL_SPI_DMA_GetRegAddr(ads131m08->SPIx), dummy_bytes);
 }
 
 static void ADC_Set_DMA_Data_Length() {

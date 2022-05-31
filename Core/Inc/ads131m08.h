@@ -27,6 +27,6 @@ typedef struct {
 
 void ADC_Init(ADS131M08 *adc_struct, SPI_TypeDef *SPIx, DMA_TypeDef *DMAx);
 void ADC_DRDY_interrupt_handler();
-void ADC_Start_Sampling();
+void ADC_Start_Sampling(ADS131M08 *adc);
 
 #endif /* INC_ADS131M08_H_ */

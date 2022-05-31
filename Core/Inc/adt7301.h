@@ -23,8 +23,8 @@ typedef enum {
 } temp_sensor;
 
 void ADT7301_Init(ADT7301 *adt7301_struct, SPI_TypeDef *SPIx);
-void ADT7301_Collect_Sample(temp_sensor ts);
-void ADT7301_Shutdown(temp_sensor ts);
-void ADT7301_Wakeup(temp_sensor ts);
+void ADT7301_Collect_Sample(ADT7301 *adt7301, temp_sensor ts);
+void ADT7301_Shutdown(ADT7301 *adt7301, temp_sensor ts);
+void ADT7301_Wakeup(ADT7301 *adt7301, temp_sensor ts);
 
 #endif /* INC_ADT7301_H_ */

@@ -1,4 +1,4 @@
-../Core/Src/sensor_board.c:8:6:SB_Init	16	static
-../Core/Src/sensor_board.c:18:6:SB_Start_ADC_Sampling	8	static
-../Core/Src/sensor_board.c:26:6:SB_Align_Samples	24	static
-../Core/Src/sensor_board.c:51:6:SB_Get_Temperature_Readings	8	static
+../Core/Src/sensor_board.c:7:6:SB_Init	16	static
+../Core/Src/sensor_board.c:16:6:SB_Start_ADC_Sampling	16	static
+../Core/Src/sensor_board.c:24:6:SB_Align_Samples	32	static
+../Core/Src/sensor_board.c:49:6:SB_Get_Temperature_Readings	16	static
